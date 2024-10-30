@@ -1,18 +1,17 @@
-# controller/ControladorVentana.py
-# Controlador/ControladorVentana.py
+from model.Automata import Automata
+from model.Validador import Validador
+
 class ControladorVentana:
-    def __init__(self, ventana):
-        self.ventana = ventana
-        # Asocia el botón de validar con la función de validación
-        self.ventana.validar_button.config(command=self.validar)
-
-    def validar(self):
-        # Obtener la expresión y las cadenas ingresadas
-        expresion = self.ventana.expresion_entry.get()
-        cadenas = self.ventana.cadenas_entry.get().split(',')
-
-        # Aquí puedes agregar el código de validación usando el validador de expresiones
-        resultados = [f"{cadena}: Validada" for cadena in cadenas]  # Esto es un ejemplo.
+    def __init__(self, vista):
+        self.vista = vista
+        self.automata = None
         
-        # Mostrar resultados
-        self.ventana.resultado_label.config(text="\n".join(resultados))
+    def procesar_expresion(self, regex, cadenas):
+        validador = Validador(regex)
+        self.automata = Automata(regex)
+        resultados = [(cadena.strip(), validador.validar_cadena(cadena.strip())) for cadena in cadenas]
+        return resultados
+    
+    def generar_imagen_automata(self):
+        automata = Automata(self.ventana.regex_entry.get())  # Usa la expresión regular ingresada
+        return automata.generar_imagen_automata()

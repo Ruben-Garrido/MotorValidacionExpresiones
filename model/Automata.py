@@ -1,41 +1,27 @@
-# model/Automata.py
-
-class Estado:
-    def __init__(self, es_final=False):
-        self.transiciones = {}  # Transiciones con formato {'simbolo': [estados_destino]}
-        self.es_final = es_final  # Define si es un estado final
-
-    def agregar_transicion(self, simbolo, estado_destino):
-        if simbolo not in self.transiciones:
-            self.transiciones[simbolo] = []
-        self.transiciones[simbolo].append(estado_destino)
+import re
+import graphviz
 
 class Automata:
-    def __init__(self):
-        self.estados = []
-        self.estado_inicial = None
-
-    def agregar_estado(self, es_final=False):
-        estado = Estado(es_final)
-        self.estados.append(estado)
-        if not self.estado_inicial:
-            self.estado_inicial = estado
-        return estado
+    def __init__(self, regex):
+        self.regex = regex
+        self.automata = None
 
     def validar_cadena(self, cadena):
-        estados_actuales = [self.estado_inicial]
-        
-        for simbolo in cadena:
-            nuevos_estados = []
-            for estado in estados_actuales:
-                if simbolo in estado.transiciones:
-                    nuevos_estados.extend(estado.transiciones[simbolo])
-            estados_actuales = nuevos_estados
-            
-        return any(estado.es_final for estado in estados_actuales)
-    
-    def validar(self, cadena):
-        # Lógica para validar la cadena usando el autómata
-        print(f"Validando la cadena: {cadena}")  # Debug para ver el proceso de validación
-        # Aquí agregarías la lógica de validación real
-        return True  # Temporal para pruebas; ajusta según la lógica de tu autómata
+        """Valida si la cadena cumple con la expresión regular."""
+        patron = re.compile(self.regex)
+        return bool(patron.fullmatch(cadena))
+
+    def generar_imagen_automata(self):
+        # Crea el autómata y genera su representación en Graphviz
+        dot = graphviz.Digraph(format='png')
+        # Aquí deberías agregar nodos y aristas según tu autómata
+        dot.node('A', 'Estado A')
+        dot.node('B', 'Estado B')
+        dot.edge('A', 'B', label='a')
+        dot.edge('A', 'A', label='b')  # Transiciones adicionales si es necesario
+
+
+        # Renderiza la imagen en un objeto en memoria
+        imagen_en_memoria = dot.pipe()
+        return imagen_en_memoria
+
