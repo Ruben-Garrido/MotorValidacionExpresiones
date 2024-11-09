@@ -1,6 +1,6 @@
 from tokens import Token, TokenType
 
-LETTERS = 'abcdefghijklmnopqrstuvwxyz01234567890.'
+LETTERS = 'abcdefghijklmnopqrstuvwxyz01234567890.' #abecedario del programa
 
 
 class Reader:

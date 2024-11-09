@@ -217,7 +217,7 @@ class DDFA:
         for symbol in self.regex:
 
             if not symbol in self.symbols:
-                return 'No'
+                return 'No pertenece a la expresion'
 
             try:
                 curr_state = self.trans_func[curr_state][symbol]
@@ -227,7 +227,7 @@ class DDFA:
                 else:
                     return 'No'
 
-        return 'Yes' if curr_state in self.accepting_states else 'No'
+        return 'Cadena aceptada' if curr_state in self.accepting_states else 'Cadena no aceptada'
 
     def GraphDFA(self):
         states = set(self.trans_func.keys())

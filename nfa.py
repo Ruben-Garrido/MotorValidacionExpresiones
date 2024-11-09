@@ -1,15 +1,13 @@
 import io
 import tkinter as tk
-
 from PIL import Image, ImageTk
 from graphviz import Digraph
 from pprint import pprint
-from nodes import Or
-from tokens import TokenType
 from utils import WriteToFile
 
 
 class NFA:
+    
     def __init__(self, tree, symbols, regex):
         # Propiedades de un autómata finito
         self.accepting_states = []
@@ -303,24 +301,14 @@ class NFA:
         return self.curr_state
 
     def WriteNFADiagram(self):
-        # Renderizar el diagrama directamente a un objeto en memoria
-        buf = io.BytesIO()
-        self.dot.format = 'png'  # Especifica el formato
-        self.dot.render(outfile=buf, cleanup=True)  # Renderiza a PNG en memoria
-        buf.seek(0)  # Volver al inicio del buffer
-
-        # Cargar la imagen usando Pillow
-        img = Image.open(buf)
-
-        # Convertir la imagen a un formato que Tkinter puede manejar
-        self.tk_image = ImageTk.PhotoImage(img)
-
-        # Mostrar la imagen en un Label o en un Canvas
-        if hasattr(self, 'image_label'):
-            self.image_label.configure(image=self.tk_image)
-            self.image_label.image = self.tk_image  # Mantener una referencia a la imagen
-        else:
-            self.image_label = tk.Label(self.root, image=self.tk_image)
-            self.image_label.image = self.tk_image  # Mantener una referencia a la imagen
-            self.image_label.pack()
-
+        source = self.dot.source
+        debug_string = f'''
+NFA:
+- Símbolos: {self.symbols}
+- Estado final: {self.accepting_states}
+- Tabla de transición:
+        '''
+        # print(debug_string)
+        # pprint(self.trans_func)
+        WriteToFile('./salidaDeAutomata/NFA.gv', source)
+        self.dot.render('./salidaDeAutomata/NFA.gv', view=True)
