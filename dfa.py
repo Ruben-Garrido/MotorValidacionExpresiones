@@ -167,8 +167,8 @@ class DFA:
         graph.attr(rankdir='LR')
 
         source = graph.source
-        WriteToFile('./salidaDeAutomata/DFA.gv', source)
-        graph.render('./salidaDeAutomata/DFA.gv', format='pdf', view=True)
+        WriteToFile('./output/DFA.gv', source)
+        graph.render('./output/DFA.gv', format='pdf', view=True)
 
 
 class Node:

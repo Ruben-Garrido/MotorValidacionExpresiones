@@ -1,3 +1,4 @@
+import os
 from parsing import Parser
 from reader import Reader
 from PIL import Image, ImageTk
@@ -6,8 +7,7 @@ from dfa import DFA
 from direct_dfa import DDFA
 from direct_reader import DirectReader
 import tkinter as tk
-from tkinter import Image, simpledialog
-from time import process_time
+from tkinter import simpledialog
 
 
 class FiniteAutomataApp:
@@ -49,31 +49,28 @@ class FiniteAutomataApp:
 
         self.clear_frame()
         tk.Label(self.root, text="Seleccione el método:", font=("Helvetica", 16)).pack(pady=10)
-        tk.Button(self.root, text="Método de Thompson", command=self.thompson_method).pack(pady=5)
-        tk.Button(self.root, text="Método DFA Directo", command=self.direct_dfa_method).pack(pady=5)
+        tk.Button(self.root, text="Método de Thompson", command=self.metodo_thompson).pack(pady=5)
+        tk.Button(self.root, text="Método DFA Directo", command=self.metodo_directo_dfa).pack(pady=5)
         tk.Button(self.root, text="Volver al menú principal", command=self.main_menu).pack(pady=5)
 
-    def thompson_method(self):
+    def metodo_thompson(self):
         input_string = simpledialog.askstring("Entrada", "Ingrese la cadena:")
         if input_string:
             try:
                 nfa = NFA(self.tree, self.reader.GetSymbols(), input_string)
                 
                 nfa_result = nfa.EvalRegex()
-                end_time = process_time()
                 self.output_area.insert(tk.END, f"\nResultado NFA (Thompson): {nfa_result}\n")
-               
                 dfa = DFA(nfa.trans_func, nfa.symbols, nfa.curr_state, nfa.accepting_states, input_string)
                 dfa.TransformNFAToDFA()
+                #dfa_result = dfa.EvalRegex()
+                #self.output_area.insert(tk.END, f"\nResultado DFA (Powerset): {dfa_result}\n")
                 
-                dfa_result = dfa.EvalRegex()
-                end_time = process_time()
-                self.output_area.insert(tk.END, f"\nResultado DFA (Powerset): {dfa_result}\n")
                 
             except Exception as e:
                 self.output_area.insert(tk.END, f"Error: {e}\n")
 
-    def direct_dfa_method(self):
+    def metodo_directo_dfa(self):
         input_string = simpledialog.askstring("Entrada", "Ingrese la cadena:")
         if input_string:
             try:
@@ -85,31 +82,23 @@ class FiniteAutomataApp:
                 dfa = DDFA(direct_tree, direct_reader.GetSymbols(), input_string)
                 
                 dfa_result = dfa.EvalRegex()
-                
+                               
+                dfa.GraphDFA()
                 self.output_area.insert(tk.END, f"\nResultado con DFA Directo: {dfa_result}\n")
+                
+                # Carga y muestra la imagen del DFA
+                dfa_image = Image.open('./output/DirectDFA.png')
+                dfa_photo = ImageTk.PhotoImage(dfa_image)
+                
+                # Muestra la imagen en la interfaz
+                label_dfa_image = tk.Label(self.root, image=dfa_photo)
+                label_dfa_image.image = dfa_photo  # Referencia para mantener la imagen
+                label_dfa_image.pack(pady=10)
                
             except Exception as e:
                 self.output_area.insert(tk.END, f"Error: {e}\n")
                 
-                ## metodos para ver el automata
-                
-    def display_diagrams(self, nfa, dfa):
-        nfa.WriteNFADiagram("nfa_diagram.png")
-        dfa.GraphDFA("dfa_diagram.png")
-        self.display_image("nfa_diagram.png", "DFA (Thompson y Powerset)")
-
-    def display_diagram_ddfa(self, ddfa):
-        ddfa.GraphDFA("direct_dfa_diagram.png")
-        self.display_image("direct_dfa_diagram.png", "DFA Directo")
-
-    def display_image(self, image_path, title):
-        img = Image.open(image_path)
-        img = img.resize((400, 300), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        self.diagram_label.config(image=img, text=title, compound="top")
-        self.diagram_label.image = img  # Necesario para evitar que la imagen sea recolectada por el recolector de basura
-
-
+        
     def clear_frame(self):
         for widget in self.root.winfo_children():
             if widget != self.output_area:

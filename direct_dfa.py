@@ -233,15 +233,15 @@ class DDFA:
         states = set(self.trans_func.keys())
         alphabet = set(self.symbols)
 
-        dfa = SimpleDFA(states, alphabet, self.initial_state,
-                        self.accepting_states, self.trans_func)
+        dfa = SimpleDFA(states, alphabet, self.initial_state, self.accepting_states, self.trans_func)
 
         graph = dfa.trim().to_graphviz()
         graph.attr(rankdir='LR')
 
         source = graph.source
         WriteToFile('./output/DirectDFA.gv', source)
-        graph.render('./output/DirectDFA.gv', format='pdf', view=True)
+        graph.render('./output/DirectDFA', format='png')
+
 
 
 class Node:

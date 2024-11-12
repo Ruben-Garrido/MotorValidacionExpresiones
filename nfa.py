@@ -310,5 +310,5 @@ NFA:
         '''
         # print(debug_string)
         # pprint(self.trans_func)
-        WriteToFile('./salidaDeAutomata/NFA.gv', source)
-        self.dot.render('./salidaDeAutomata/NFA.gv', view=True)
+        WriteToFile('./output/NFA.gv', source)
+        self.dot.render('./output/NFA.gv', view=True)
