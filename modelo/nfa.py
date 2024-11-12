@@ -3,7 +3,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from graphviz import Digraph
 from pprint import pprint
-from utils import WriteToFile
+from modelo.utils import WriteToFile
 
 
 class NFA:

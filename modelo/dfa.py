@@ -2,7 +2,7 @@ import pythomata
 from pprint import pprint
 from pythomata import SimpleDFA
 from graphviz import Digraph
-from utils import WriteToFile
+from modelo.utils import WriteToFile
 
 STATES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 

@@ -1,5 +1,5 @@
-from tokens import TokenType
-from nodes import *
+from modelo.tokens import TokenType
+from modelo.nodes import *
 
 
 class Parser:
