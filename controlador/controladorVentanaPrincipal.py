@@ -1,9 +1,8 @@
+import re
 from vista.ventanaPrincipal import VentanaPrincipal
 import tkinter as tk
 from modelo.reader import Reader
 from modelo.parsing import Parser
-from modelo.nfa import NFA
-from modelo.dfa import DFA
 from modelo.direct_dfa import DDFA
 from modelo.direct_reader import DirectReader
 from PIL import Image, ImageTk
@@ -13,19 +12,29 @@ class ControladorVentanaPrincipal:
         self.ventana = VentanaPrincipal(root, self)
         self.regex = None
         self.tree = None
-
+        
     def set_regex(self):
         self.regex = self.ventana.pedir_expresion_regular()
         if self.regex:
+            
             try:
+                # Intentamos compilar la expresión regular para verificar si es válida
+                re.compile(self.regex)  # Esto lanzará un error si la regex es inválida
                 reader = Reader(self.regex)
                 tokens = reader.CreateTokens()
                 parser = Parser(tokens)
                 self.tree = parser.Parse()
-                self.ventana.mostrar_resultado(f"Expresión aceptada: {self.regex}")
+                self.ventana.mostrar_resultado(f"Expresión aceptada: {self.regex}", resaltar=True)
+                
+            except re.error as regex_error:  # Capturamos errores específicos de regex
+                # Mostramos detalles del error
+                error_message = f"Error en la expresión regular:\n"
+                error_message += f"Posición: {regex_error.pos}\n"
+                error_message += f"Parte incorrecta: {self.regex[regex_error.pos-5:regex_error.pos+5]}"  # Mostramos la parte de la regex alrededor del error
+                self.ventana.mostrar_resultado(error_message)
             except Exception as e:
                 self.ventana.mostrar_resultado(f"Error: {e}")
-
+                
     def test_string(self):
         if not self.regex:
             self.ventana.mostrar_resultado("Error: Debes establecer una expresión regular primero.")
@@ -33,19 +42,8 @@ class ControladorVentanaPrincipal:
 
         self.ventana.clear_frame()
         tk.Label(self.ventana.root, text="Seleccione el método:", font=("Helvetica", 16)).pack(pady=10)
-        tk.Button(self.ventana.root, text="Método de Thompson", command=self.metodo_thompson).pack(pady=5)
-        tk.Button(self.ventana.root, text="Método DFA Directo", command=self.metodo_directo_dfa).pack(pady=5)
+        tk.Button(self.ventana.root, text="DFA Directo", command=self.metodo_directo_dfa).pack(pady=5)
         tk.Button(self.ventana.root, text="Volver al menú principal", command=self.ventana.main_menu).pack(pady=5)
-
-    def metodo_thompson(self):
-        input_string = self.ventana.pedir_cadena()
-        if input_string:
-            try:
-                nfa = NFA(self.tree, self.regex, input_string)
-                nfa_result = nfa.EvalRegex()
-                self.ventana.mostrar_resultado(f"\nResultado NFA (Thompson): {nfa_result}")
-            except Exception as e:
-                self.ventana.mostrar_resultado(f"Error: {e}")
 
     def metodo_directo_dfa(self):
         input_string = self.ventana.pedir_cadena()
@@ -70,4 +68,4 @@ class ControladorVentanaPrincipal:
                 label_dfa_image.pack(pady=10)
                 
             except Exception as e:
-                self.ventana.mostrar_resultado(f"Error: {e}")
+                self.ventana.mostrar_resultado(f"Error al procesar la cadena: {e}")

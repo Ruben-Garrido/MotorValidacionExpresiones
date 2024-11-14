@@ -1,3 +1,4 @@
+import re
 import tkinter as tk
 from tkinter import simpledialog
 
@@ -7,9 +8,14 @@ class VentanaPrincipal:
         self.controlador = controlador
         self.root.title("EVALUADOR DE EXPRESIONES REGULARES")
         
-        self.output_area = tk.Text(self.root, height=15, width=70)
+        self.output_area = tk.Text(self.root, height=15, width=50)
         self.output_area.pack(pady=10)
-
+        
+        # Configuración de tags para colores
+        self.output_area.tag_configure("verde", foreground="green")
+        self.output_area.tag_configure("azul", foreground="blue")
+        self.output_area.tag_configure("rojo", foreground="red")  
+        
         self.main_menu()
 
     def main_menu(self):
@@ -19,15 +25,39 @@ class VentanaPrincipal:
         tk.Button(self.root, text="Probar una cadena con la expresión regular", command=self.controlador.test_string).pack(pady=5)
         tk.Button(self.root, text="Salir", command=self.root.quit, bg="red", fg="white").pack(pady=5)
 
-
     def pedir_expresion_regular(self):
         return simpledialog.askstring("Entrada", "Escriba una expresión regular:")
 
     def pedir_cadena(self):
         return simpledialog.askstring("Entrada", "Ingrese la cadena:")
 
-    def mostrar_resultado(self, mensaje):
-        self.output_area.insert(tk.END, mensaje + "\n")
+    def mostrar_resultado(self, mensaje, resaltar=False):
+        self.output_area.delete(1.0, tk.END)  # Limpiar el área de texto antes de mostrar
+        if resaltar:
+            self.resaltar_sintaxis(mensaje)
+        else:
+            self.output_area.insert(tk.END, mensaje + "\n")
+
+    def resaltar_sintaxis(self, expresion_regular):
+        """Resalta la sintaxis de la expresión regular."""
+        # Definimos los patrones que queremos resaltar
+        patrones = [
+            (r"([()])", "azul"),         # Paréntesis () en azul
+             (r"([|])", "verde"),         # Paréntesis () en verde
+            (r"(\+|\*)", "rojo"),          # Operadores + y * en rojo
+           
+        ]
+        
+        # Insertamos el texto completo primero
+        self.output_area.insert(tk.END, expresion_regular)
+        
+        # Iterar a través de cada patrón y aplicarlo
+        for patron, color in patrones:
+            # Buscamos las coincidencias para cada patrón
+            for match in re.finditer(patron, expresion_regular):
+                start_idx = self.output_area.index(f"1.0 + {match.start()} chars")  # Índice de inicio
+                end_idx = self.output_area.index(f"1.0 + {match.end()} chars")    # Índice de fin
+                self.output_area.tag_add(color, start_idx, end_idx)  # Aplicamos el tag de color
 
     def clear_frame(self):
         for widget in self.root.winfo_children():
