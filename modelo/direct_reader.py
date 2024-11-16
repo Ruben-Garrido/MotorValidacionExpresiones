@@ -2,21 +2,21 @@ from modelo.tokens import Token, TokenType
 
 LETTERS = 'abcdefghijklmnopqrstuvwxyz01234567890.' #alfabeto del programa
 
-
+#Esta clase esta encargada de leer y asignar los tokens de los simbols, que nos ayudara a construir el arbol sintatico
 class DirectReader:
 
     def __init__(self, string: str):
-        self.string = iter(string.replace(' ', ''))
-        self.input = set()
-        self.rparPending = False
-        self.Next()
+        self.string = iter(string.replace(' ', ''))#borra los espacios de la expresion y se itera caracter por caracter
+        self.input = set()#Conjunto que almacenará los caracteres válidos del alfabeto detectados en la expresión.
+        self.rparPending = False#Bandera para determinar si es necesario insertar un token 
+        self.Next()#Llama a un método que avanza al siguiente carácter en el iterador
 
     def Next(self):
         try:
             self.curr_char = next(self.string)
         except StopIteration:
             self.curr_char = None
-
+    # Aqui generamos los tokens necesarios para su descomposicion
     def CreateTokens(self):
         while self.curr_char != None:
 
@@ -26,7 +26,7 @@ class DirectReader:
 
                 self.Next()
 
-                # Finally, check if we need to add an append token
+                # Finalmente, verifique si necesitamos agregar un token de adición
                 if self.curr_char != None and \
                         (self.curr_char in LETTERS or self.curr_char == '('):
                     yield Token(TokenType.APPEND, '.')
@@ -82,7 +82,7 @@ class DirectReader:
                     yield Token(TokenType.RPAR)
                     self.rparPending = False
 
-                # Finally, check if we need to add an append token
+                # Finalmente, verifique si necesitamos agregar un token de adición
                 if self.curr_char != None and \
                         (self.curr_char in LETTERS or self.curr_char == '('):
                     yield Token(TokenType.APPEND, '.')
@@ -93,5 +93,5 @@ class DirectReader:
         yield Token(TokenType.APPEND, '.')
         yield Token(TokenType.LETTER, '#')
 
-    def GetSymbols(self):
+    def GetSymbols(self):#Devolvemos el cojunto de simbolos validos
         return self.input

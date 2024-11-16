@@ -2,8 +2,11 @@ from modelo.tokens import Token, TokenType
 
 LETTERS = 'abcdefghijklmnopqrstuvwxyz01234567890.' #abecedario del programa
 
-
-class Reader:
+"""analizar y tokenizar una expresión regular proporcionada como entrada. Convierte la expresión
+en una secuencia de tokens, que son representaciones abstractas de los elementos individuales 
+(símbolos, operadores, paréntesis, etc.)"""
+class Reader:#basicamente este es nuestro analizador quien convierte la cadena en algo que el programa 
+    #pueda modelar y funcion de igual forma que el direct reader
     def __init__(self, string: str):
         self.string = iter(string.replace(' ', ''))
         self.input = set()
@@ -87,7 +90,7 @@ class Reader:
                     self.Next()
                     yield Token(TokenType.QUESTION)
 
-                # Finally, check if we need to add an append token
+                # Finalmente, verifique si necesitamos agregar un token de adición
                 if self.curr_char != None and \
                         (self.curr_char in LETTERS or self.curr_char == '('):
                     yield Token(TokenType.APPEND, '.')

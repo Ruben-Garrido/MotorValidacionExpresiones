@@ -1,7 +1,8 @@
 from modelo.tokens import TokenType
 from modelo.nodes import *
 
-
+"""actúa como un analizador sintáctico que toma una secuencia de tokens generada
+por DirectReader y la convierte en un árbol sintáctico abstracto"""
 class Parser:
     def __init__(self, tokens):
         self.tokens = iter(tokens)
@@ -42,10 +43,7 @@ class Parser:
             if self.curr_token.type == TokenType.KLEENE:
                 self.Next()
                 res = Kleene(res)
-            elif self.curr_token.type == TokenType.QUESTION:
-                self.Next()
-                res = Question(res)
-            else:
+            elif self.curr_token.type == TokenType.PLUS:
                 self.Next()
                 res = Plus(res)
 
